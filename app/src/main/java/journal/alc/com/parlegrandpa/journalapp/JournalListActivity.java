@@ -2,6 +2,7 @@ package journal.alc.com.parlegrandpa.journalapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ public class JournalListActivity extends AppCompatActivity implements MainViewIn
     List<Note> notesList;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
+    private String user_email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,13 @@ public class JournalListActivity extends AppCompatActivity implements MainViewIn
         auth = FirebaseAuth.getInstance();
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        user_email = user.getEmail();
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("UserInfoPreference", 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("user_email", user_email);
+        editor.apply();
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -75,7 +85,7 @@ public class JournalListActivity extends AppCompatActivity implements MainViewIn
 
     private void loadNotes(){
 
-        LocalCacheManager.getInstance(this).getNotes(this);
+        LocalCacheManager.getInstance(this).getNotes(this, user_email);
 
 
     }
@@ -176,6 +186,7 @@ public class JournalListActivity extends AppCompatActivity implements MainViewIn
 
         int id = item.getItemId();
         if(id == R.id.action_logout){
+            finish();
             auth.signOut();
         }
 

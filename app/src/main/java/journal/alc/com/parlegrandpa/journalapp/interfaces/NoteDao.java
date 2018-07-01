@@ -14,8 +14,8 @@ import journal.alc.com.parlegrandpa.journalapp.model.Note;
 @Dao
 public interface NoteDao {
 
-    @Query("SELECT * FROM notes ORDER BY id DESC")
-    Maybe<List<Note>> getAll();
+    @Query("SELECT * FROM notes WHERE user_email = :user_email ORDER BY id DESC")
+    Maybe<List<Note>> getAll(String user_email);
 
     @Insert
     void insertAll(Note... notes);

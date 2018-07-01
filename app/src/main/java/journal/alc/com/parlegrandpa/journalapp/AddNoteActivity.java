@@ -1,6 +1,7 @@
 package journal.alc.com.parlegrandpa.journalapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,6 +25,8 @@ public class AddNoteActivity extends AppCompatActivity implements AddNoteViewInt
     @BindView(R.id.etNote)
     EditText etNote;
 
+    private String user_email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,8 @@ public class AddNoteActivity extends AppCompatActivity implements AddNoteViewInt
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("UserInfoPreference", 0);
+        user_email = pref.getString("user_email", null);
     }
 
 
@@ -50,7 +54,7 @@ public class AddNoteActivity extends AppCompatActivity implements AddNoteViewInt
         }else{
             //Call Method to add note
 
-            LocalCacheManager.getInstance(this).addNotes(this, title, note_text, currentDateTimeString);
+            LocalCacheManager.getInstance(this).addNotes(this, title, note_text, currentDateTimeString, user_email);
         }
 
     }

@@ -2,6 +2,7 @@ package journal.alc.com.parlegrandpa.journalapp.room;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class LocalCacheManager {
     }
 
     @SuppressLint("CheckResult")
-    public void getNotes(final MainViewInterface mainViewInterface) {
-        db.noteDao().getAll().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<Note>>() {
+    public void getNotes(final MainViewInterface mainViewInterface, String user_email) {
+        db.noteDao().getAll(user_email).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<Note>>() {
             @Override
             public void accept(List<Note> notes) throws Exception {
                 mainViewInterface.onNotesLoaded(notes);
@@ -43,11 +44,11 @@ public class LocalCacheManager {
         });
     }
 
-    public void addNotes(final AddNoteViewInterface addNoteViewInterface, final String note_title, final String note_text, final String created_date) {
+    public void addNotes(final AddNoteViewInterface addNoteViewInterface, final String note_title, final String note_text, final String created_date, final String user_email) {
         Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                Note note = new Note(note_title, note_text, created_date);
+                Note note = new Note(note_title, note_text, created_date, user_email);
                 db.noteDao().insertAll(note);
             }
         }).observeOn(AndroidSchedulers.mainThread())
